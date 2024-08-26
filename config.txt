@@ -1,0 +1,56 @@
+# storage config
+--expname=block_size64_meta_steps10
+
+# data config
+--block_num=50
+--center_num=128
+--maml_chunk=150000
+--block_gen_method=uniform
+--dataset=ArgonBubble
+--batch_size=128
+--time_step=10
+--block_size
+64
+64
+
+# model config
+--model=siren
+--netdepth=3
+--netwidth=16
+--activation_func=sine
+--use_embedder=0
+--use_latent=0
+--inner_part=MF
+--input_ch=2
+--input_transformer_depth=1
+--latent_dim=8
+--w0=30
+
+# hyper parameters config
+--task=test
+--query_lrate=1e-4
+--repeat_num=20
+--maml_epoches=100
+--meta_steps=10
+--optimize_steps=5
+--query_steps=50
+--groups_num=10
+--group_init=cluster_init
+--distance_method=JSD
+--cluster_method=kmeans
+--outer_lr=1e-4
+--inner_lr=1e-2
+--maml_boundary=2
+--MI_R=I
+--is_train=0
+
+#device config
+--GPU=1
+
+
+
+
+
+
+
+

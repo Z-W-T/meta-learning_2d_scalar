@@ -274,7 +274,7 @@ def train_meta_template(args):
             file.write('{} = {}\n'.format(arg, attr))
 
     # create data block for training
-    dataset = dataloaders.SingleTimeStampDataloader('2D-airfoil')
+    dataset = dataloaders.MultiTimeStampDataloader('2D-airfoil')
     dataset.load_interpolated_data()
     block_generator = DataPreprocess.BlockGenerator(dataset.get_data())
     data_block_array = block_generator.generate_data_block(block_size=args.block_size, method=args.block_gen_method)

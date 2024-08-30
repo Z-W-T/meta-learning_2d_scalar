@@ -1,5 +1,5 @@
 # storage config
---expname=block_size64_meta_steps10
+--expname=block_size64_v1
 
 # data config
 --block_num=50
@@ -27,7 +27,7 @@
 --w0=30
 
 # hyper parameters config
---task=test
+--task=train_templates
 --query_lrate=1e-4
 --repeat_num=20
 --maml_epoches=100

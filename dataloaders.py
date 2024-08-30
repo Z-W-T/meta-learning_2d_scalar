@@ -77,7 +77,7 @@ class INS3Dv2:
 
     def load_interpolated_data(self):
         if self.timestep == -1:
-            for file_path in glob(self.data_dir + '*.31')[:10]:
+            for file_path in glob(self.data_dir + '*.31')[::50]:
                 ## 读数据
                 with open(file_path, 'rb') as file:
                     jmax, kmax, lmax = np.fromfile(file, dtype=np.int32, count=3)
@@ -89,7 +89,7 @@ class INS3Dv2:
                     q3 = np.fromfile(file, dtype='<f4', count=jmax*kmax*lmax).reshape((lmax, kmax, jmax))
                     q4 = np.fromfile(file, dtype='<f4', count=jmax*kmax*lmax).reshape((lmax, kmax, jmax))
                 file.close()
-                zoom_factors = (2, 2)
+                zoom_factors = (8, 8)
                 interpolated_q1 = zoom(q1[0,...], zoom_factors, order=1)
                 normalize_lower_bound, normalize_upper_bound = np.percentile(interpolated_q1, 0), np.percentile(interpolated_q1, 100)
                 interpolated_q1 = (interpolated_q1 - normalize_lower_bound) / (normalize_upper_bound - normalize_lower_bound)

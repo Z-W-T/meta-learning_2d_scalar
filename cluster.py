@@ -7,17 +7,19 @@ import math
 import threading
 import maml_wt
 import time
+import copy
 
 from scipy.stats import entropy
 from tqdm import tqdm, trange
 from collections import Counter
 from scipy.spatial.distance import jensenshannon
 from concurrent.futures import ThreadPoolExecutor,ProcessPoolExecutor,as_completed,wait,FIRST_COMPLETED
-from multiprocessing import Manager
+import multiprocessing as mp
 
 class Variable_MI():
     def __init__(self, args) -> None:
         self.args = args
+        mp.set_start_method('spawn')
         return
     
     def variable_entropy(self, block) -> float:
@@ -77,36 +79,32 @@ class Variable_MI():
         return jensenshannon(dist_a, dist_b)
     
     def jsd3(self, blocks_np, index):
-        hist_a = blocks_np[index]
-        dist_a = hist_a / hist_a.sum()
+        dist_a = blocks_np[index]
         result = []
         for i in range(index+1, len(blocks_np)):
-            hist_b = blocks_np[i]
-            dist_b = hist_b / hist_b.sum()
+            dist_b = blocks_np[i]
             result.append(self.jensen_shannon_divergence(dist_a, dist_b).item())
         return index, result
     
     def parellel_jsd_distance_matrix(self, blocks):
         distance_matrix = np.zeros((len(blocks), len(blocks)))
-        block_histogram = [torch.tensor(np.histogram(block.reshape(-1), bins=1000, range=(0, 1))[0]).to(utils.get_device(self.args.GPU)) for block in blocks]
+        block_histogram = np.array([np.histogram(block.reshape(-1), bins=1000, range=(0, 1))[0] for block in blocks])
+        block_histogram = block_histogram / block_histogram.sum(axis=1, keepdims=True)  # 归一化
+        block_histogram = torch.tensor(block_histogram)
         with ProcessPoolExecutor(max_workers=8) as executor:
             tasks = []
             for i in trange(len(blocks)):
                 tasks.append(executor.submit(self.jsd3, block_histogram, i))
-            for future in as_completed(tasks):
+            for future in tqdm(as_completed(tasks), total=len(tasks)):
                 index, distance = future.result()
-                print(index)
                 for i in range(index+1, len(blocks)):
                     distance_matrix[index][i] = distance_matrix[i][index] = distance[i-index-1]
         return distance_matrix
     
     def jsd_distance_matrix(self, blocks):
         distance_matrix = np.zeros((len(blocks), len(blocks)))
-        block_histogram = []
-        for block in blocks:
-            histogram = np.histogram(block.reshape(-1), bins=1000, range=(0, 1))[0]
-            distribute = histogram / histogram.sum()
-            block_histogram.append(distribute)
+        block_histogram = np.array([np.histogram(block.reshape(-1), bins=1000, range=(0, 1))[0] for block in blocks])
+        block_histogram = block_histogram / block_histogram.sum(axis=1, keepdims=True)  # 归一化
         for i in trange(len(blocks)):
             for j in trange(i+1, len(blocks)):
                 distance_matrix[i][j] = distance_matrix[j][i] = jensenshannon(block_histogram[i], block_histogram[j])

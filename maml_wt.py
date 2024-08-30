@@ -127,7 +127,7 @@ def maml_init(blocks, args):
         # 计算block之间距离矩阵
         blocks_data = [block.v for block in blocks]
         distance_calculator = cluster.Variable_MI(args)
-        distance_matrix = distance_calculator.jsd_distance_matrix(blocks_data)
+        distance_matrix = distance_calculator.parellel_jsd_distance_matrix(blocks_data)
         # 降维到二维平面
         tsne = TSNE(n_components=2, metric="precomputed")
         embedded = tsne.fit_transform(distance_matrix)

@@ -83,7 +83,7 @@ class Variable_MI():
         result = []
         for i in range(index+1, len(blocks_np)):
             dist_b = blocks_np[i]
-            result.append(self.jensen_shannon_divergence(dist_a, dist_b).item())
+            result.append(jensenshannon(dist_a, dist_b))
         return index, result
     
     def parellel_jsd_distance_matrix(self, blocks):

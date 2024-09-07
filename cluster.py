@@ -88,9 +88,9 @@ class Variable_MI():
     
     def parellel_jsd_distance_matrix(self, blocks):
         distance_matrix = np.zeros((len(blocks), len(blocks)))
-        block_histogram = np.array([np.histogram(block.reshape(-1), bins=1000, range=(0, 1))[0] for block in blocks])
+        block_histogram = np.array([np.histogram(block.reshape(-1), bins=100, range=(0, 1))[0] for block in blocks])
         block_histogram = block_histogram / block_histogram.sum(axis=1, keepdims=True)  # 归一化
-        block_histogram = torch.tensor(block_histogram)
+        # block_histogram = torch.tensor(block_histogram)
         with ProcessPoolExecutor(max_workers=8) as executor:
             tasks = []
             for i in trange(len(blocks)):

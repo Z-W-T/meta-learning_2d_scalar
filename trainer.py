@@ -293,19 +293,19 @@ def train_meta_template(args):
         templates = maml_wt.maml_templates_generate(groups, data_block_array, args, templates)
 
         # 绘制templates
-        templates_block = [[] for template in templates]
-        idx=0
-        for i, template in enumerate(templates):
-            while groups[idx]==[] and idx<len(groups):
-                idx += 1
-            x = utils.get_query_coords(utils.vec2f(-1), utils.vec2f(1), data_block_array[0].res).reshape([-1, 2]).astype(np.float32)
-            x = torch.tensor(x).to(utils.get_device(args.GPU))
-            with torch.no_grad():
-                rec_y = template(x).reshape(args.block_size).cpu()
-            templates_block[i].append(DataPreprocess.Block(rec_y, data_block_array[0].res))
-            templates_block[i].extend([data_block_array[k] for k in groups[idx]])
-            idx += 1
-            utils.vtk_draw_blocks(templates_block[i])
+        # templates_block = [[] for template in templates]
+        # idx=0
+        # for i, template in enumerate(templates):
+        #     while groups[idx]==[] and idx<len(groups):
+        #         idx += 1
+        #     x = utils.get_query_coords(utils.vec2f(-1), utils.vec2f(1), data_block_array[0].res).reshape([-1, 2]).astype(np.float32)
+        #     x = torch.tensor(x).to(utils.get_device(args.GPU))
+        #     with torch.no_grad():
+        #         rec_y = template(x).reshape(args.block_size).cpu()
+        #     templates_block[i].append(DataPreprocess.Block(rec_y, data_block_array[0].res))
+        #     templates_block[i].extend([data_block_array[k] for k in groups[idx]])
+        #     idx += 1
+        #     utils.vtk_draw_blocks(templates_block[i])
 
         # 重新分组
         groups_old = groups
